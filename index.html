@@ -4,27 +4,42 @@
   <title>앱으로 이동 중...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script>
-    // URL에서 파라미터 추출 (예: ?id=1234)
+    // 딥링크용 파라미터 추출
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || "0";
-
-    // 앱 딥링크 URL 구성
     const deeplink = "unitydl://mylink?" + id;
 
-    // 앱 열기 시도
+    // 앱이 백그라운드로 가는 것을 감지하기 위한 플래그
+    let hidden = false;
+    document.addEventListener("visibilitychange", () => {
+      hidden = document.hidden;
+    });
+
+    // 딥링크 실행
     window.location.href = deeplink;
 
-    // 앱이 설치되지 않았을 경우 fallback URL로 이동
+    // 앱이 열리지 않은 경우 fallback (2.5초 뒤)
     setTimeout(() => {
-      window.location.href = "https://www.popsline.co.kr/popsworld"; // <- 앱스토어나 랜딩페이지로 변경 가능
-    }, 1500);
+      if (!hidden) {
+        window.location.href = "https://www.popsline.co.kr/popsworld"; // 앱 다운로드 페이지 등으로 수정 가능
+      }
+    }, 2500);
   </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+  </style>
 </head>
 <body>
   <h2>앱으로 이동 중입니다...</h2>
-  <p>잠시만 기다려 주세요. 앱이 자동으로 실행되지 않으면 <a id="manual" href="#">여기를 눌러주세요</a>.</p>
+  <p>잠시만 기다려 주세요.</p>
+  <p>앱이 자동으로 실행되지 않으면 <a id="manual" href="#">여기를 눌러 앱을 실행</a>하세요.</p>
 
   <script>
+    // 수동 실행용 하이퍼링크 설정
     document.getElementById("manual").href = "unitydl://mylink?" + (new URLSearchParams(window.location.search).get("id") || "0");
   </script>
 </body>
